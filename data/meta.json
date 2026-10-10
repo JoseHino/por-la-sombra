@@ -3,7 +3,7 @@
  "lat0": 36.52,
  "kx": 89568.02277486437,
  "ky": 110968.64322726343,
- "generado": "2026-10-09",
+ "generado": "2026-10-10",
  "fecha_osm": "2026-10-08T20:21:06Z",
  "bbox": [
   -5.0146669,
@@ -29,7 +29,7 @@
    "km_calzada_con_aceras": 792
   },
   "edificios": {
-   "cuerpos": 87807,
+   "cuerpos": 88030,
    "plantas_max": 21
   },
   "vegetacion": {
@@ -39,7 +39,7 @@
   },
   "buscador": {
    "calles": 1717,
-   "lugares": 2129
+   "lugares": 2134
   }
  }
 }
