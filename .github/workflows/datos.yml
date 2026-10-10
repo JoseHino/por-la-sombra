@@ -1,0 +1,53 @@
+name: Datos (red, edificios e indicadores)
+
+# Regenera los datos de la app y del observatorio: red peatonal y árboles de OpenStreetMap,
+# edificios del Catastro e indicadores de sombra. Las calles cambian poco: una vez al mes
+# (día 5, 04:30 UTC) y a mano desde Actions -> Datos -> Run workflow.
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "30 4 5 * *"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: datos
+  cancel-in-progress: false
+
+jobs:
+  datos:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    env:
+      CACHE_DIR: ${{ github.workspace }}/build
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - run: pip install osmium geopandas pyogrio shapely pyproj numpy pmtiles pillow
+
+      - name: OpenStreetMap (extracto de Andalucía de Geofabrik)
+        run: python -u scripts/extraer_osm.py
+
+      - name: Red, edificios del Catastro, vegetación y buscador
+        run: python -u scripts/construir_datos.py
+
+      - name: Indicadores del observatorio
+        run: node scripts/indicadores.mjs
+
+      - name: Publicar
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898888+github-actions[bot]@users.noreply.github.com"
+          git add data observatorio/data
+          git diff --cached --quiet && exit 0
+          git commit -m "Datos: red, edificios e indicadores $(date -u +%F)"
+          git pull --rebase -q && git push

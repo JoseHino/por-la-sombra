@@ -1,0 +1,367 @@
+/* ============================================================================
+   obs.css — Sistema de diseño de los Observatorios de Indicadores
+   Paleta categórica validada (ALL CHECKS PASS en claro y oscuro).
+   No editar por observatorio: la marca se ajusta en :root dentro del index.html.
+   ========================================================================== */
+
+/* ---------------------------------------------------------------- 1. Tokens */
+:root {
+  color-scheme: light;
+
+  /* superficies e ink */
+  --bg:            #f4f6fa;
+  --surface:       #ffffff;
+  --surface-2:     #f8fafc;
+  --surface-sunk:  #eef2f8;
+  --line:          #dfe6f0;
+  --line-strong:   #c6d2e2;
+  --ink:           #0f1b2d;
+  --ink-2:         #44546b;
+  --ink-mut:       #6b7c94;
+
+  /* marca */
+  --brand:         #2a78d6;
+  --brand-ink:     #1c5cab;
+  --brand-soft:    #eaf2fd;
+
+  /* serie categórica — orden FIJO, nunca se recicla (ver docs/03-diseno.md) */
+  --s1: #2a78d6;  --s2: #eb6834;  --s3: #1baf7a;  --s4: #eda100;
+  --s5: #e87ba4;  --s6: #008300;  --s7: #4a3aa7;  --s8: #e34948;
+
+  /* estado — reservados, jamás como "serie 9" */
+  --ok:       #0ca30c;
+  --warn:     #fab219;
+  --serious:  #ec835a;
+  --crit:     #d03b3b;
+
+  /* rejilla y ejes: un paso por encima de la superficie, hairline */
+  --grid:     #e7edf5;
+  --axis:     #cfd9e6;
+
+  /* forma */
+  --r-sm: 6px;  --r: 10px;  --r-lg: 14px;
+  --shadow:    0 1px 2px rgba(15,27,45,.06), 0 4px 14px rgba(15,27,45,.05);
+  --shadow-up: 0 2px 6px rgba(15,27,45,.09), 0 12px 28px rgba(15,27,45,.09);
+
+  /* tipografía */
+  --font: "Montserrat", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --fs-hero: clamp(30px, 4vw, 42px);
+}
+
+/* Modo oscuro: pasos propios para la superficie oscura, no un volteo automático.
+   Se declara en los dos ámbitos (media query = ajuste del SO, data-theme = botón). */
+@media (prefers-color-scheme: dark) {
+  :root:where(:not([data-theme="light"])) {
+    color-scheme: dark;
+    --bg: #0d131c; --surface: #131a24; --surface-2: #18202c; --surface-sunk: #0f161f;
+    --line: #26303f; --line-strong: #38455a;
+    --ink: #eef3fa; --ink-2: #b3c1d4; --ink-mut: #8496ad;
+    --brand: #3987e5; --brand-ink: #6da7ec; --brand-soft: #16233a;
+    --s1:#3987e5; --s2:#d95926; --s3:#199e70; --s4:#c98500;
+    --s5:#d55181; --s6:#008300; --s7:#9085e9; --s8:#e66767;
+    --grid: #212b39; --axis: #334052;
+    --shadow: 0 1px 2px rgba(0,0,0,.4), 0 4px 14px rgba(0,0,0,.3);
+    --shadow-up: 0 2px 6px rgba(0,0,0,.5), 0 12px 28px rgba(0,0,0,.4);
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #0d131c; --surface: #131a24; --surface-2: #18202c; --surface-sunk: #0f161f;
+  --line: #26303f; --line-strong: #38455a;
+  --ink: #eef3fa; --ink-2: #b3c1d4; --ink-mut: #8496ad;
+  --brand: #3987e5; --brand-ink: #6da7ec; --brand-soft: #16233a;
+  --s1:#3987e5; --s2:#d95926; --s3:#199e70; --s4:#c98500;
+  --s5:#d55181; --s6:#008300; --s7:#9085e9; --s8:#e66767;
+  --grid: #212b39; --axis: #334052;
+  --shadow: 0 1px 2px rgba(0,0,0,.4), 0 4px 14px rgba(0,0,0,.3);
+  --shadow-up: 0 2px 6px rgba(0,0,0,.5), 0 12px 28px rgba(0,0,0,.4);
+}
+
+/* ----------------------------------------------------------------- 2. Base */
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0; background: var(--bg); color: var(--ink);
+  font-family: var(--font); font-size: 15px; line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+a { color: var(--brand-ink); text-decoration: none; }
+a:hover { text-decoration: underline; }
+h1, h2, h3, h4 { margin: 0; font-weight: 600; letter-spacing: -.015em; }
+:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; border-radius: var(--r-sm); }
+.obs-wrap { max-width: 1360px; margin: 0 auto; padding: 0 24px; }
+@media (max-width: 640px) { .obs-wrap { padding: 0 14px; } }
+.obs-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+/* --------------------------------------------------------------- 3. Cabecera */
+.obs-header { background: var(--surface); border-bottom: 1px solid var(--line); }
+.obs-header-in { display: flex; gap: 20px; align-items: flex-start; padding: 22px 0 18px; }
+.obs-brand { display: flex; gap: 13px; align-items: center; flex: 1 1 auto; min-width: 0; }
+.obs-brand .mark {
+  width: 42px; height: 42px; flex: none; border-radius: 11px;
+  background: var(--brand); color: #fff; display: grid; place-items: center;
+}
+.obs-brand .mark svg { width: 23px; height: 23px; }
+.obs-title { font-size: 20px; line-height: 1.2; }
+.obs-subtitle { color: var(--ink-mut); font-size: 13px; margin-top: 2px; }
+.obs-header-actions { display: flex; gap: 8px; align-items: center; flex: none; }
+
+/* ---------------------------------------------------- 4. Navegación por áreas */
+.obs-nav {
+  position: sticky; top: 0; z-index: 20;
+  background: var(--surface);
+  border-bottom: 1px solid var(--line);
+}
+.obs-nav-in { display: flex; gap: 2px; overflow-x: auto; scrollbar-width: none; }
+.obs-nav-in::-webkit-scrollbar { display: none; }
+.obs-nav button {
+  flex: none; appearance: none; background: none; border: 0;
+  border-bottom: 2px solid transparent; cursor: pointer;
+  font: inherit; font-size: 13.5px; font-weight: 500; color: var(--ink-mut);
+  padding: 13px 14px 11px; white-space: nowrap; transition: color .15s, border-color .15s;
+}
+.obs-nav button:hover { color: var(--ink); }
+.obs-nav button[aria-selected="true"] { color: var(--brand-ink); border-bottom-color: var(--brand); font-weight: 600; }
+
+/* -------------------------------------------------------------- 5. Secciones */
+.obs-main { padding: 26px 0 64px; }
+.obs-section[hidden] { display: none; }
+.obs-section-head { margin-bottom: 18px; max-width: 78ch; }
+.obs-section-head h2 { font-size: 21px; }
+.obs-section-head p { color: var(--ink-2); font-size: 13.5px; margin: 5px 0 0; }
+
+/* ------------------------------------------------------ 6. Cifra protagonista */
+/* Una sola por vista. Sans, nunca serif. Cifras proporcionales. */
+.obs-hero {
+  background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-lg);
+  padding: 22px 24px; margin-bottom: 16px; box-shadow: var(--shadow);
+  display: flex; gap: 26px; align-items: center; flex-wrap: wrap;
+}
+.obs-hero .v { font-size: var(--fs-hero); font-weight: 650; line-height: 1; letter-spacing: -.03em; }
+.obs-hero .l { color: var(--ink-mut); font-size: 13px; margin-top: 6px; }
+
+/* ----------------------------------------------------------- 7. Fichas de KPI */
+.obs-kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(192px, 1fr)); gap: 12px; margin-bottom: 20px; }
+.obs-kpi {
+  background: var(--surface); border: 1px solid var(--line); border-radius: var(--r);
+  padding: 15px 16px 14px; box-shadow: var(--shadow); position: relative; overflow: hidden;
+}
+.obs-kpi .l { color: var(--ink-mut); font-size: 12px; font-weight: 500; }
+.obs-kpi .v { font-size: 27px; font-weight: 650; letter-spacing: -.025em; line-height: 1.15; margin-top: 5px; }
+.obs-kpi .v small { font-size: 14px; font-weight: 500; color: var(--ink-2); margin-left: 3px; letter-spacing: 0; }
+.obs-kpi .d { display: inline-flex; align-items: center; gap: 4px; font-size: 12px; font-weight: 600; margin-top: 7px; }
+.obs-kpi .d svg { width: 12px; height: 12px; }
+.obs-kpi .d.up   { color: var(--ok); }
+.obs-kpi .d.down { color: var(--crit); }
+.obs-kpi .d.flat { color: var(--ink-mut); }
+.obs-kpi .d .ref { color: var(--ink-mut); font-weight: 500; }
+.obs-kpi .spark { position: absolute; right: 0; bottom: 0; width: 96px; height: 34px; opacity: .55; pointer-events: none; }
+
+/* -------------------------------------------------------- 8. Tarjeta-gráfica */
+.obs-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.obs-grid.cols-1 { grid-template-columns: minmax(0, 1fr); }
+.obs-grid.cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+@media (max-width: 1080px) { .obs-grid, .obs-grid.cols-3 { grid-template-columns: minmax(0, 1fr); } }
+
+.obs-card {
+  background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-lg);
+  box-shadow: var(--shadow); display: flex; flex-direction: column; min-width: 0;
+  transition: box-shadow .18s;
+}
+.obs-card:hover { box-shadow: var(--shadow-up); }
+.obs-card.span-2 { grid-column: 1 / -1; }
+.obs-card-head { padding: 15px 17px 0; display: flex; gap: 12px; align-items: flex-start; }
+.obs-card-head .t { flex: 1 1 auto; min-width: 0; }
+.obs-card-head h3 { font-size: 14.5px; }
+.obs-card-head .cs { color: var(--ink-mut); font-size: 12px; margin-top: 3px; }
+.obs-card-ctrl { display: inline-flex; align-items: center; gap: 7px; flex: 0 0 auto; }
+.obs-card-ctrl span { color: var(--ink-mut); font-size: 11.5px; font-weight: 600; letter-spacing: .01em; }
+.obs-card-ctrl .obs-select { min-width: 96px; }
+.obs-card-tools { display: flex; gap: 3px; flex: none; }
+.obs-icon-btn {
+  appearance: none; background: none; border: 1px solid transparent; border-radius: var(--r-sm);
+  width: 27px; height: 27px; display: grid; place-items: center; cursor: pointer; color: var(--ink-mut);
+}
+.obs-icon-btn:hover { background: var(--surface-sunk); color: var(--ink); border-color: var(--line); }
+.obs-icon-btn[aria-pressed="true"] { background: var(--brand-soft); color: var(--brand-ink); border-color: var(--brand); }
+.obs-icon-btn svg { width: 15px; height: 15px; }
+.obs-plot { height: 288px; padding: 6px 8px 0; min-width: 0; }
+.obs-card.span-2 .obs-plot { height: 330px; }
+.obs-card.tall  .obs-plot { height: 420px; }
+.obs-card-foot {
+  padding: 9px 17px 13px; margin-top: auto; border-top: 1px solid var(--line);
+  color: var(--ink-mut); font-size: 11.5px; display: flex; gap: 8px; flex-wrap: wrap; align-items: center;
+}
+/* Los SVG sueltos dentro de texto (enlace externo) heredan tamaño del contenedor
+   si no se acotan aquí: sin esta regla salen a pantalla completa. */
+.obs-card-foot svg, .obs-footer svg { width: 11px; height: 11px; vertical-align: -1px; flex: none; }
+
+/* --------------------------------------------------------------- 9. Etiquetas */
+.obs-chip {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-size: 10.5px; font-weight: 600; letter-spacing: .02em; text-transform: uppercase;
+  padding: 2px 8px; border-radius: 20px; border: 1px solid var(--line-strong); color: var(--ink-2);
+  background: var(--surface-2); white-space: nowrap;
+}
+.obs-chip.live  { color: #0a7d0a; border-color: #9fd79f; background: #f0faf0; }
+.obs-chip.warn  { color: #8a6100; border-color: #e6c374; background: #fdf6e6; }
+.obs-chip.brand { color: var(--brand-ink); border-color: #a9caf0; background: var(--brand-soft); }
+.obs-chip .dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+:root[data-theme="dark"] .obs-chip.live { color: #4fc44f; border-color: #1d5c1d; background: #102110; }
+:root[data-theme="dark"] .obs-chip.warn { color: var(--warn); border-color: #5c4a12; background: #241d08; }
+:root[data-theme="dark"] .obs-chip.brand { border-color: #2c4a78; }
+
+/* --------------------------------------------- 10. Tabla (relieve obligatorio) */
+/* La paleta clara tiene 3 slots por debajo de 3:1 de contraste: la regla de
+   relieve exige que SIEMPRE exista vista de tabla. Por eso va en el kit. */
+.obs-table-wrap { display: none; padding: 4px 17px 14px; overflow-x: auto; max-height: 330px; }
+.obs-card.showing-table .obs-table-wrap { display: block; }
+.obs-card.showing-table .obs-plot { display: none; }
+table.obs-table { border-collapse: collapse; width: 100%; font-size: 12.5px; }
+table.obs-table th, table.obs-table td { padding: 6px 10px; border-bottom: 1px solid var(--line); text-align: right; white-space: nowrap; }
+table.obs-table th:first-child, table.obs-table td:first-child { text-align: left; }
+table.obs-table thead th {
+  position: sticky; top: 0; background: var(--surface); color: var(--ink-mut);
+  font-weight: 600; font-size: 11.5px; text-transform: uppercase; letter-spacing: .03em;
+}
+table.obs-table td { font-variant-numeric: tabular-nums; }
+table.obs-table th .key { display: inline-block; width: 9px; height: 9px; border-radius: 2px; margin-right: 5px; vertical-align: -1px; }
+table.obs-table tbody tr:hover { background: var(--surface-2); }
+
+/* ------------------------------------------------------ 11. Barra de controles */
+.obs-toolbar { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-bottom: 16px; }
+.obs-btn {
+  appearance: none; font: inherit; font-size: 13px; font-weight: 500;
+  background: var(--surface); color: var(--ink); border: 1px solid var(--line-strong);
+  border-radius: var(--r-sm); padding: 7px 13px; cursor: pointer;
+  display: inline-flex; align-items: center; gap: 6px;
+}
+.obs-btn:hover { border-color: var(--brand); color: var(--brand-ink); }
+.obs-btn svg { width: 14px; height: 14px; }
+.obs-btn.primary { background: var(--brand); border-color: var(--brand); color: #fff; }
+.obs-btn.primary:hover { background: var(--brand-ink); color: #fff; }
+.obs-select {
+  font: inherit; font-size: 13px; background: var(--surface); color: var(--ink);
+  border: 1px solid var(--line-strong); border-radius: var(--r-sm); padding: 7px 10px;
+}
+.obs-segment { display: inline-flex; background: var(--surface-sunk); border-radius: var(--r-sm); padding: 2px; gap: 2px; }
+.obs-segment button {
+  appearance: none; border: 0; background: none; font: inherit; font-size: 12.5px; font-weight: 500;
+  color: var(--ink-mut); padding: 5px 11px; border-radius: 5px; cursor: pointer;
+}
+.obs-segment button[aria-pressed="true"] { background: var(--surface); color: var(--ink); box-shadow: var(--shadow); font-weight: 600; }
+.obs-status { color: var(--ink-mut); font-size: 12.5px; margin-left: auto; display: flex; align-items: center; gap: 6px; }
+
+/* ------------------------------------------- 12. Carga, vacío, error, aviso */
+.obs-skeleton {
+  background: linear-gradient(90deg, var(--surface-sunk) 25%, var(--surface-2) 50%, var(--surface-sunk) 75%);
+  background-size: 400% 100%; animation: obs-sk 1.4s ease-in-out infinite; border-radius: var(--r-sm);
+}
+@keyframes obs-sk { 0% { background-position: 100% 0; } 100% { background-position: 0 0; } }
+.obs-msg { display: grid; place-items: center; height: 100%; text-align: center; padding: 20px; gap: 6px; color: var(--ink-mut); font-size: 13px; }
+.obs-msg svg { width: 26px; height: 26px; opacity: .6; }
+.obs-msg.error { color: var(--crit); }
+.obs-note {
+  background: var(--surface); border: 1px solid var(--line); border-left: 3px solid var(--brand);
+  border-radius: var(--r-sm); padding: 10px 14px; font-size: 12.5px; color: var(--ink-2);
+  margin-bottom: 16px; line-height: 1.5;
+}
+.obs-note.warn { border-left-color: var(--warn); }
+
+/* ------------------------------------------------------------------ 13. Pie */
+.obs-footer { border-top: 1px solid var(--line); background: var(--surface); padding: 24px 0 40px; }
+.obs-footer .obs-wrap { color: var(--ink-mut); font-size: 12.5px; line-height: 1.65; }
+.obs-footer h4 { font-size: 12px; text-transform: uppercase; letter-spacing: .05em; color: var(--ink-2); margin: 0 0 6px; }
+.obs-footer-cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 22px; }
+
+/* ------------------------------------------------------------- 14. Impresión */
+@media print {
+  .obs-nav, .obs-toolbar, .obs-card-tools, .obs-header-actions { display: none !important; }
+  body { background: #fff; }
+  .obs-section[hidden] { display: block !important; }
+  .obs-card { break-inside: avoid; box-shadow: none; }
+  .obs-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+}
+
+/* ------------------------------------------------------------- 15. Mapa */
+/* Acompaña a obs-map.js. Leaflet trae sus propios estilos; aquí sólo se
+   reviste con los tokens del kit para que no cante junto a las gráficas. */
+.obs-map { display: flex; flex-direction: column; }
+.obs-map-tools {
+  display: flex; gap: 10px; align-items: flex-end; flex-wrap: wrap;
+  padding: 0 17px 12px; border-bottom: 1px solid var(--line);
+}
+.obs-map-f { display: flex; flex-direction: column; gap: 4px; font-size: 11.5px; color: var(--ink-mut); font-weight: 500; }
+.obs-map-f .obs-select { min-width: 148px; }
+.obs-map-capas { display: flex; gap: 8px; align-items: center; }
+.obs-map-cuenta { margin-left: auto; font-size: 12.5px; color: var(--ink-2); align-self: center; }
+.obs-map-cuenta b { font-size: 15px; color: var(--ink); }
+.obs-map-nota { color: var(--ink-mut); }
+
+.obs-map-lienzo { height: 520px; width: 100%; background: var(--surface-sunk); z-index: 0; }
+.obs-card.tall .obs-map-lienzo { height: 620px; }
+@media (max-width: 700px) { .obs-map-lienzo { height: 400px; } }
+
+/* Línea del tiempo */
+.obs-map-linea { display: flex; gap: 12px; align-items: center; padding: 12px 17px 4px; }
+.obs-map-linea-in { flex: 1 1 auto; }
+.obs-map-linea-lbl { display: flex; justify-content: space-between; font-size: 11.5px; color: var(--ink-mut); margin-bottom: 3px; }
+.obs-map-linea-lbl b { color: var(--brand-ink); font-size: 15px; font-weight: 650; }
+.obs-map-linea-ejes { display: flex; justify-content: space-between; font-size: 10.5px; color: var(--ink-mut); margin-top: 2px; }
+.obs-map-linea input[type="range"] { width: 100%; accent-color: var(--brand); cursor: pointer; }
+
+/* Leyenda */
+.obs-map-leyenda { display: flex; flex-wrap: wrap; gap: 12px; padding: 10px 17px 0; }
+.obs-map-item { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: var(--ink-2); }
+.obs-map-item i { width: 10px; height: 10px; border-radius: 3px; flex: none; }
+
+/* Agrupaciones y globos, revestidos con los tokens */
+.obs-cluster {
+  display: grid; place-items: center; border-radius: 50%;
+  background: color-mix(in srgb, var(--brand) 22%, var(--surface));
+  border: 2px solid var(--brand); color: var(--brand-ink);
+  font-weight: 650; font-size: 12px; font-family: var(--font);
+  box-shadow: 0 2px 10px rgba(15,27,45,.18);
+}
+.leaflet-container { font-family: var(--font); background: var(--surface-sunk); }
+.leaflet-popup-content-wrapper, .leaflet-popup-tip { background: var(--surface); color: var(--ink); box-shadow: var(--shadow-up); }
+.leaflet-popup-content-wrapper { border-radius: var(--r); border: 1px solid var(--line); }
+.leaflet-popup-content { margin: 12px 14px; font-size: 12.5px; line-height: 1.5; }
+.leaflet-control-attribution { background: color-mix(in srgb, var(--surface) 85%, transparent) !important; color: var(--ink-mut); font-size: 10px; }
+.leaflet-control-attribution a { color: var(--brand-ink); }
+.leaflet-bar a { background: var(--surface); color: var(--ink); border-bottom-color: var(--line); }
+.leaflet-bar a:hover { background: var(--surface-2); color: var(--brand-ink); }
+
+/* Ficha de un punto */
+.obs-ficha h4 { font-size: 13.5px; margin: 0 0 2px; }
+.obs-ficha .ref { font-size: 11px; color: var(--ink-mut); font-variant-numeric: tabular-nums; }
+.obs-ficha dl { display: grid; grid-template-columns: auto 1fr; gap: 2px 12px; margin: 9px 0 0; font-size: 12px; }
+.obs-ficha dt { color: var(--ink-mut); }
+.obs-ficha dd { margin: 0; text-align: right; font-variant-numeric: tabular-nums; }
+.obs-ficha .sep { grid-column: 1 / -1; border-top: 1px solid var(--line); margin: 5px 0; }
+.obs-ficha .dir { font-size: 11.5px; color: var(--ink-2); margin-top: 6px; line-height: 1.4; }
+
+/* Los topónimos de la capa de referencia van sobre los datos: un nombre de
+   urbanización tapado por una agrupación de puntos no sirve de nada. */
+.obs-map-lienzo .leaflet-shadow-pane { z-index: 650; pointer-events: none; }
+
+/* Escala continua de la capa de calor: el color codifica magnitud, así que
+   necesita su propia leyenda cuando esa capa está activa. */
+.obs-map-escala { display: inline-flex; align-items: center; gap: 7px; }
+.obs-map-escala .barra {
+  display: inline-block; width: 132px; height: 9px; border-radius: 5px;
+  border: 1px solid var(--line);
+}
+.obs-map-escala .ext { font-size: 11px; color: var(--ink-mut); }
+
+/* Aviso de que hay más detalle al acercarse. Va junto al recuento, no encima
+   del mapa: un cartel flotante tapa justo la zona que se quiere mirar. */
+.obs-map-pista {
+  display: inline-block; margin-left: 8px; font-size: 11px; font-weight: 500;
+  color: var(--brand-ink); background: var(--brand-soft);
+  border: 1px solid color-mix(in srgb, var(--brand) 30%, transparent);
+  border-radius: 20px; padding: 2px 9px; vertical-align: middle;
+}

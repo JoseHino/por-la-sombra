@@ -1,0 +1,17 @@
+{
+  "name": "Por la sombra · Marbella",
+  "short_name": "Por la sombra",
+  "description": "Rutas a pie por Marbella que buscan la sombra de los edificios según el día y la hora.",
+  "lang": "es",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f4f6fa",
+  "theme_color": "#1c5cab",
+  "icons": [
+    { "src": "img/icono-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "img/icono-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "img/icono-maskable.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" },
+    { "src": "img/icono.svg", "sizes": "any", "type": "image/svg+xml" }
+  ]
+}

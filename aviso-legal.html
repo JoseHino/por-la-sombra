@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Aviso legal · Por la sombra</title>
+<link rel="icon" href="img/icono.svg" type="image/svg+xml">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/app.css">
+</head>
+<body class="pagina">
+<main class="legal">
+  <p><a href="./">&larr; Volver a Por la sombra</a></p>
+  <h1>Aviso legal y condiciones de uso</h1>
+
+  <h2>Titular</h2>
+  <p><span data-titular="nombre"></span><span data-bloque="nif">, NIF <span data-titular="nif"></span></span><span data-bloque="direccion">, con domicilio en <span data-titular="direccion"></span></span>. Es un proyecto personal, gratuito y sin actividad económica. Contacto: <span data-titular="email"></span>.</p>
+
+  <h2>Qué es</h2>
+  <p><b>Por la sombra</b> es una herramienta gratuita que propone rutas a pie por el término municipal de Marbella buscando la sombra de los edificios según el día y la hora. Para usarla hay que registrarse (mientras el registro no esté activado, se puede usar sin cuenta); al usarla aceptas estas condiciones y la <a href="privacidad.html">política de privacidad</a>.</p>
+
+  <h2>Es una estimación</h2>
+  <ul>
+    <li>Las sombras se calculan con la posición del sol y la volumetría del Catastro: la altura de cada cuerpo de edificio se estima con su número de plantas (3 m por planta y 1 m más). No se tienen en cuenta el relieve, los toldos, los soportales que no estén cartografiados ni todo el arbolado (solo los árboles que hay en OpenStreetMap).</li>
+    <li>Cuando las aceras no están dibujadas aparte, se suponen a ambos lados de la calzada según su ancho estimado.</li>
+    <li>Las rutas siguen la red peatonal de OpenStreetMap, que puede contener errores u omisiones: calles cortadas, obras, accesos privados o pasos que ya no existen.</li>
+  </ul>
+  <p>Respeta siempre las señales, los semáforos y las normas de circulación, y usa tu propio criterio. La herramienta no sirve para emergencias. El titular no responde de los daños que pudieran derivarse de seguir una ruta propuesta.</p>
+
+  <h2>Uso correcto</h2>
+  <p>No está permitido usar el servicio de forma que pueda dañarlo o sobrecargarlo, ni registrarse con datos de otra persona. El titular puede suspender las cuentas que incumplan estas condiciones.</p>
+
+  <h2>Fuentes de datos y licencias</h2>
+  <ul>
+    <li>Red peatonal, árboles y lugares: © colaboradores de <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>, licencia ODbL.</li>
+    <li>Edificios: Dirección General del Catastro (servicio INSPIRE de edificios).</li>
+    <li>Mapa base: <a href="https://openfreemap.org" target="_blank" rel="noopener">OpenFreeMap</a> y OpenMapTiles; ortofoto PNOA © Instituto Geográfico Nacional (CC BY 4.0); direcciones: CartoCiudad (IGN).</li>
+    <li>Relieve: Gemelo Digital de Marbella (Terrain Tiles y EMODnet). Tiempo: <a href="https://open-meteo.com" target="_blank" rel="noopener">Open-Meteo</a> (CC BY 4.0).</li>
+  </ul>
+
+  <h2>Legislación</h2>
+  <p>Estas condiciones se rigen por la legislación española.</p>
+</main>
+<script type="module" src="js/legal.js"></script>
+</body>
+</html>

@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Por la sombra · Marbella</title>
+<meta name="description" content="Rutas a pie por Marbella que buscan la sombra de los edificios según el día y la hora a la que sales.">
+<meta name="theme-color" content="#1c5cab">
+<link rel="icon" href="img/icono.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="img/icono-180.png">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5.24.0/dist/maplibre-gl.css">
+<link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+
+<!-- Iconos (trazo de 24 px) -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-buscar" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7.5"/><path d="m20.5 20.5-4.2-4.2"/></symbol>
+  <symbol id="i-cerrar" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></symbol>
+  <symbol id="i-atras" viewBox="0 0 24 24"><path d="m12 19-7-7 7-7M19 12H5"/></symbol>
+  <symbol id="i-cambiar" viewBox="0 0 24 24"><path d="m21 16-4 4-4-4M17 20V4M3 8l4-4 4 4M7 4v16"/></symbol>
+  <symbol id="i-ubicacion" viewBox="0 0 24 24"><circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="2.5"/><path d="M2 12h3M19 12h3M12 2v3M12 19v3"/></symbol>
+  <symbol id="i-capas" viewBox="0 0 24 24"><path d="m12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z"/><path d="m22 17.65-9.17 4.16a2 2 0 0 1-1.66 0L2 17.65"/><path d="m22 12.65-9.17 4.16a2 2 0 0 1-1.66 0L2 12.65"/></symbol>
+  <symbol id="i-sol" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></symbol>
+  <symbol id="i-luna" viewBox="0 0 24 24"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></symbol>
+  <symbol id="i-reloj" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9.5"/><path d="M12 6.5V12l3.5 2"/></symbol>
+  <symbol id="i-ajustes" viewBox="0 0 24 24"><path d="M21 4h-7M10 4H3M21 12h-9M8 12H3M21 20h-5M12 20H3M14 2v4M8 10v4M16 18v4"/></symbol>
+  <symbol id="i-usuario" viewBox="0 0 24 24"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></symbol>
+  <symbol id="i-estrella" viewBox="0 0 24 24"><path d="M12 2.5l2.95 5.98 6.6.96-4.78 4.65 1.13 6.57L12 17.56l-5.9 3.1 1.13-6.57-4.78-4.65 6.6-.96Z"/></symbol>
+  <symbol id="i-casa" viewBox="0 0 24 24"><path d="m3 9.5 9-7 9 7V20a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z"/><path d="M9 22V12h6v10"/></symbol>
+  <symbol id="i-trabajo" viewBox="0 0 24 24"><rect width="20" height="14" x="2" y="7" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></symbol>
+  <symbol id="i-historial" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5M12 7v5l4 2"/></symbol>
+  <symbol id="i-navegar" viewBox="0 0 24 24"><path d="M3 11 22 2l-9 19-2-8Z"/></symbol>
+  <symbol id="i-recto" viewBox="0 0 24 24"><path d="m5 11 7-7 7 7M12 20V4"/></symbol>
+  <symbol id="i-izq" viewBox="0 0 24 24"><path d="M9 14 4 9l5-5"/><path d="M20 20v-7a4 4 0 0 0-4-4H4"/></symbol>
+  <symbol id="i-der" viewBox="0 0 24 24"><path d="m15 14 5-5-5-5"/><path d="M4 20v-7a4 4 0 0 1 4-4h12"/></symbol>
+  <symbol id="i-lizq" viewBox="0 0 24 24"><path d="M7 17V7h10M17 17 7 7"/></symbol>
+  <symbol id="i-lder" viewBox="0 0 24 24"><path d="M7 7h10v10M7 17 17 7"/></symbol>
+  <symbol id="i-vuelta" viewBox="0 0 24 24"><path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/></symbol>
+  <symbol id="i-meta" viewBox="0 0 24 24"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1zM4 22v-7"/></symbol>
+  <symbol id="i-pin" viewBox="0 0 24 24"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></symbol>
+  <symbol id="i-mira" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9.5"/><path d="M22 12h-4M6 12H2M12 6V2M12 22v-4"/></symbol>
+  <symbol id="i-sombrilla" viewBox="0 0 24 24"><path d="M22 12a10 10 0 0 0-20 0Z"/><path d="M12 12v8a2 2 0 0 0 4 0M12 2v1"/></symbol>
+  <symbol id="i-arbol" viewBox="0 0 24 24"><path d="M12 22v-7l-2-2"/><path d="M17 8v.8A6 6 0 0 1 13.8 20H10A6.5 6.5 0 0 1 7 8a5 5 0 0 1 10 0Z"/><path d="m14 14-2 2"/></symbol>
+  <symbol id="i-salir" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></symbol>
+  <symbol id="i-papelera" viewBox="0 0 24 24"><path d="M3 6h18M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></symbol>
+  <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9.5"/><path d="M12 16v-4.5M12 8h.01"/></symbol>
+  <symbol id="i-abajo" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
+  <symbol id="i-grafica" viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></symbol>
+  <symbol id="i-escalera" viewBox="0 0 24 24"><path d="M3 20h5v-5h5v-5h5V5h3"/></symbol>
+  <symbol id="i-escudo" viewBox="0 0 24 24"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/></symbol>
+  <symbol id="i-pie" viewBox="0 0 24 24"><circle cx="13" cy="4" r="2"/><path d="m9.5 22 2-6.5 3 2.5v6M7 12l3-4.5 4 1 2.5 3.5M11.5 15.5 10 8.5"/></symbol>
+  <symbol id="i-mas" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="i-correo" viewBox="0 0 24 24"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></symbol>
+</svg>
+
+<!-- ================================================================ ACCESO (registro obligatorio) -->
+<section id="acceso" class="acceso" hidden>
+  <div class="acceso-caja">
+    <div class="marca">
+      <img src="img/icono.svg" alt="">
+      <div><h1>Por la sombra</h1><p>Marbella</p></div>
+    </div>
+    <p class="lema">Rutas a pie que buscan <b>la sombra de los edificios</b> según el día y la hora a la que sales.</p>
+
+    <!-- entrar / crear cuenta -->
+    <div class="tarjeta" id="accesoForm">
+      <button class="btn google ancho" id="btnGoogle" type="button">
+        <svg viewBox="0 0 48 48" aria-hidden="true"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.4-.4-3.5z"/><path fill="#FF3D00" d="m6.3 14.7 6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-8l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C37 39.2 44 34 44 24c0-1.3-.1-2.4-.4-3.5z"/></svg>
+        Continuar con Google
+      </button>
+      <div class="separador">o con tu correo</div>
+      <div class="pestanas" role="tablist">
+        <button type="button" role="tab" aria-selected="true" data-modo="entrar">Entrar</button>
+        <button type="button" role="tab" aria-selected="false" data-modo="crear">Crear cuenta</button>
+      </div>
+      <form id="formAcceso" novalidate>
+        <label class="campo" data-solo="crear" hidden><span>Nombre</span><input name="nombre" autocomplete="name" maxlength="60"></label>
+        <label class="campo"><span>Correo electrónico</span><input name="email" type="email" autocomplete="email" required></label>
+        <label class="campo"><span>Contraseña</span><input name="clave" type="password" autocomplete="current-password" minlength="8" required></label>
+        <label class="casilla" data-solo="crear" hidden><input type="checkbox" name="anonimo"><span>Quiero ayudar a mejorar la sombra de Marbella compartiendo, de forma anónima, la hora, la distancia y el % de sombra de mis rutas (nunca el origen ni el destino).</span></label>
+        <button class="btn ancho" type="submit" id="btnAcceso">Entrar</button>
+        <div id="accesoMsg" class="msg" hidden></div>
+        <p style="text-align:center;margin:12px 0 0"><button type="button" class="enlace" id="btnOlvido">¿Has olvidado la contraseña?</button></p>
+      </form>
+      <p class="legal-nota">Al continuar aceptas el <a href="aviso-legal.html">aviso legal</a> y la <a href="privacidad.html">política de privacidad</a>. Tu ubicación no sale de tu móvil: la ruta se calcula en él.</p>
+    </div>
+
+    <!-- verificación del correo -->
+    <div class="tarjeta" id="accesoVerifica" hidden>
+      <div class="permiso-ilu"><svg class="ico"><use href="#i-correo"/></svg></div>
+      <h2 style="margin:0 0 6px;font-size:19px">Revisa tu correo</h2>
+      <p style="margin:0 0 14px;color:var(--ink-2)">Te hemos enviado un enlace a <b id="verificaEmail"></b>. Ábrelo para activar la cuenta: esta pantalla seguirá sola en cuanto lo hagas.</p>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn" type="button" id="btnYaVerificado">Ya lo he abierto</button>
+        <button class="btn sec" type="button" id="btnReenviar">Reenviar el correo</button>
+      </div>
+      <div id="verificaMsg" class="msg" hidden></div>
+      <p style="margin:14px 0 0"><button type="button" class="enlace" id="btnOtraCuenta">Usar otra cuenta</button></p>
+    </div>
+
+    <!-- registro aún no activado: uso provisional sin cuenta -->
+    <div class="tarjeta" id="accesoPendiente" hidden>
+      <h2 style="margin:0 0 6px;font-size:19px">Úsala ya, sin cuenta</h2>
+      <p style="margin:0 0 14px;color:var(--ink-2)">El registro de usuarios se activa en unos días. Mientras tanto puedes usar la app sin cuenta: tus sitios y destinos se guardan solo en este navegador.</p>
+      <button class="btn ancho" type="button" id="btnSinCuenta">Entrar</button>
+      <p class="legal-nota">Al continuar aceptas el <a href="aviso-legal.html">aviso legal</a> y la <a href="privacidad.html">política de privacidad</a>. Tu ubicación no sale de tu móvil: la ruta se calcula en él.</p>
+    </div>
+
+    <p class="pie-acceso"><a href="observatorio/">Observatorio de la sombra</a> · <a href="privacidad.html">Privacidad</a> · <a href="aviso-legal.html">Aviso legal</a></p>
+  </div>
+</section>
+
+<!-- ================================================================ APP -->
+<main id="app" class="app" hidden>
+  <div id="mapa" aria-label="Mapa de Marbella"></div>
+
+  <div class="panel" id="panel">
+    <header class="barra" id="barra">
+      <!-- búsqueda simple -->
+      <div class="fila-busca" id="filaBusca">
+        <svg class="ico" style="margin-left:8px;color:var(--ink-mut)"><use href="#i-buscar"/></svg>
+        <input id="qDestino0" type="search" placeholder="¿A dónde vas?" autocomplete="off" enterkeyhint="search" aria-label="Destino">
+        <button class="avatar" id="btnPerfil" type="button" aria-label="Tu cuenta">·</button>
+      </div>
+      <!-- modo ruta: origen y destino -->
+      <div id="filaRuta" hidden>
+        <div class="puntos">
+          <div class="marcas"><span class="o"></span><i></i><i></i><i></i><svg class="ico s d"><use href="#i-pin"/></svg></div>
+          <input id="qOrigen" type="search" placeholder="Punto de partida" autocomplete="off" aria-label="Punto de partida">
+          <div class="acc">
+            <button class="icono-btn" id="btnCerrarRuta" type="button" aria-label="Cerrar la ruta"><svg class="ico"><use href="#i-cerrar"/></svg></button>
+            <button class="icono-btn" id="btnCambiar" type="button" aria-label="Intercambiar origen y destino"><svg class="ico"><use href="#i-cambiar"/></svg></button>
+          </div>
+          <input id="qDestino" type="search" placeholder="Destino" autocomplete="off" aria-label="Destino">
+        </div>
+        <div class="chips">
+          <button class="chip" id="chipHora" type="button"><svg class="ico s"><use href="#i-reloj"/></svg><span id="chipHoraTxt">Salir ahora</span></button>
+          <button class="chip" id="chipAjustes" type="button"><svg class="ico s"><use href="#i-ajustes"/></svg><span id="chipAjustesTxt">Opciones</span></button>
+        </div>
+      </div>
+    </header>
+
+    <div class="sugerencias" id="sugerencias" role="listbox" hidden></div>
+
+    <section class="hoja plegada" id="hoja" hidden>
+      <button class="asa" id="asa" type="button" aria-label="Ampliar o reducir el panel"></button>
+      <div class="hoja-in" id="hojaIn"></div>
+    </section>
+  </div>
+
+  <button class="solchip" id="solchip" type="button" aria-label="Sol y hora">
+    <svg class="ico"><use href="#i-sol"/></svg><span id="solchipTxt">Calculando el sol…</span>
+  </button>
+  <div class="controles">
+    <button class="redondo" id="btnUbicacion" type="button" aria-label="Mi ubicación"><svg class="ico"><use href="#i-ubicacion"/></svg></button>
+    <button class="redondo activo" id="btnSombras" type="button" aria-label="Mostrar u ocultar las sombras" aria-pressed="true"><svg class="ico"><use href="#i-sombrilla"/></svg></button>
+    <button class="redondo" id="btnCapas" type="button" aria-label="Cambiar el fondo del mapa"><svg class="ico"><use href="#i-capas"/></svg></button>
+  </div>
+
+  <!-- navegación -->
+  <div class="nav-top" id="navTop" hidden>
+    <div class="gi"><svg class="ico l" id="navIco"><use href="#i-recto"/></svg></div>
+    <div><div class="dist" id="navDist"></div><div class="txt" id="navTxt"></div><span class="acera" id="navAcera" hidden></span></div>
+  </div>
+  <div class="nav-bot" id="navBot" hidden>
+    <div class="resto"><b id="navResto"></b><small id="navResto2"></small></div>
+    <button class="btn peligro" id="btnFinNav" type="button">Salir</button>
+  </div>
+
+  <div class="aviso" id="aviso" role="status" hidden></div>
+  <div class="cargando" id="cargando"><div><div class="rueda"></div><p id="cargandoTxt">Cargando las calles y los edificios de Marbella…</p></div></div>
+</main>
+
+<!-- ================================================================ DIÁLOGOS -->
+<dialog id="dlgHora">
+  <form method="dialog" class="dlg-in">
+    <div class="dlg-cab"><h2>¿Cuándo sales?</h2><button class="icono-btn" value="cancelar" aria-label="Cerrar"><svg class="ico"><use href="#i-cerrar"/></svg></button></div>
+    <p class="ayuda">La sombra cambia con la hora y con la época del año. La ruta se calcula con el sol que habrá en cada calle cuando pases por ella.</p>
+    <div class="opciones">
+      <button type="button" class="chip" data-hora="ahora">Ahora</button>
+      <button type="button" class="chip" data-hora="+30">Dentro de 30 min</button>
+      <button type="button" class="chip" data-hora="+60">Dentro de 1 hora</button>
+    </div>
+    <label class="campo"><span>Día</span><input type="date" id="horaDia"></label>
+    <label class="campo"><span>Hora de salida (hora de Marbella)</span><input type="time" id="horaHora" step="300"></label>
+    <div class="dlg-pie"><button class="btn sec" value="cancelar">Cancelar</button><button class="btn" value="ok" id="btnHoraOk">Calcular</button></div>
+  </form>
+</dialog>
+
+<dialog id="dlgAjustes">
+  <form method="dialog" class="dlg-in">
+    <div class="dlg-cab"><h2>Opciones de la ruta</h2><button class="icono-btn" value="cancelar" aria-label="Cerrar"><svg class="ico"><use href="#i-cerrar"/></svg></button></div>
+    <div class="grupo-titulo">Rodeo máximo para ganar sombra</div>
+    <p class="ayuda">Cuánto más larga que la ruta más corta puede ser la ruta con más sombra.</p>
+    <div class="opciones" id="optRodeo">
+      <button type="button" class="chip" data-v="0.1">+10 %</button>
+      <button type="button" class="chip" data-v="0.2">+20 %</button>
+      <button type="button" class="chip" data-v="0.3">+30 %</button>
+      <button type="button" class="chip" data-v="0.5">+50 %</button>
+    </div>
+    <div class="grupo-titulo">Ritmo</div>
+    <div class="opciones" id="optVelocidad">
+      <button type="button" class="chip" data-v="4">Tranquilo (4 km/h)</button>
+      <button type="button" class="chip" data-v="4.8">Normal (4,8 km/h)</button>
+      <button type="button" class="chip" data-v="5.6">Rápido (5,6 km/h)</button>
+    </div>
+    <label class="interruptor"><span><b>Evitar escaleras</b><br><small class="ayuda">Para carritos, sillas de ruedas o movilidad reducida.</small></span><input type="checkbox" id="optEscaleras"></label>
+    <div class="dlg-pie"><button class="btn" value="ok">Aplicar</button></div>
+  </form>
+</dialog>
+
+<dialog id="dlgPerfil">
+  <div class="dlg-in">
+    <div class="dlg-cab"><h2>Tu cuenta</h2><button class="icono-btn" data-cerrar aria-label="Cerrar"><svg class="ico"><use href="#i-cerrar"/></svg></button></div>
+    <div class="perfil-cab"><span class="avatar" id="perfilAvatar"></span><div><b id="perfilNombre"></b><br><small class="ayuda" id="perfilEmail"></small></div></div>
+    <div class="grupo-titulo">Tus sitios</div>
+    <ul class="lista-sitios" id="listaSitios"></ul>
+    <p class="ayuda" id="sitiosVacio">Guarda tu casa, tu trabajo o tus sitios favoritos desde el panel de cada ruta.</p>
+    <label class="interruptor"><span><b>Compartir estadísticas anónimas</b><br><small class="ayuda">Hora, distancia y % de sombra de tus rutas, sin origen ni destino. Alimentan el observatorio.</small></span><input type="checkbox" id="optAnonimo"></label>
+    <ul class="menu">
+      <li><a href="observatorio/"><svg class="ico"><use href="#i-grafica"/></svg>Observatorio de la sombra</a></li>
+      <li><a href="privacidad.html"><svg class="ico"><use href="#i-escudo"/></svg>Privacidad</a></li>
+      <li><button type="button" id="btnTema"><svg class="ico"><use href="#i-luna"/></svg><span id="btnTemaTxt">Tema oscuro</span></button></li>
+      <li><button type="button" id="btnSalir"><svg class="ico"><use href="#i-salir"/></svg>Cerrar sesión</button></li>
+      <li><button type="button" id="btnBorrarCuenta" class="peligro"><svg class="ico"><use href="#i-papelera"/></svg>Eliminar mi cuenta</button></li>
+    </ul>
+  </div>
+</dialog>
+
+<dialog id="dlgUbicacion">
+  <div class="dlg-in">
+    <div class="permiso-ilu"><svg class="ico"><use href="#i-ubicacion"/></svg></div>
+    <h2 style="margin:0 0 6px;font-size:19px">¿Usamos tu ubicación?</h2>
+    <p style="margin:0 0 10px;color:var(--ink-2)">Para calcular rutas desde donde estás, el navegador te pedirá permiso para conocer tu ubicación.</p>
+    <p class="ayuda" style="margin-bottom:14px">Tu posición solo se usa en tu propio móvil para calcular la ruta y seguirla; no se guarda ni se envía a ningún servidor.</p>
+    <div class="dlg-pie" style="justify-content:stretch">
+      <button class="btn sec" type="button" id="btnUbiNo" style="flex:1">Ahora no</button>
+      <button class="btn" type="button" id="btnUbiSi" style="flex:1">Usar mi ubicación</button>
+    </div>
+  </div>
+</dialog>
+
+<dialog id="dlgGuardar">
+  <form method="dialog" class="dlg-in">
+    <div class="dlg-cab"><h2>Guardar sitio</h2><button class="icono-btn" value="cancelar" aria-label="Cerrar"><svg class="ico"><use href="#i-cerrar"/></svg></button></div>
+    <p class="ayuda" id="guardarTexto"></p>
+    <div class="opciones" id="optTipoSitio">
+      <button type="button" class="chip" data-v="casa"><svg class="ico s"><use href="#i-casa"/></svg>Casa</button>
+      <button type="button" class="chip" data-v="trabajo"><svg class="ico s"><use href="#i-trabajo"/></svg>Trabajo</button>
+      <button type="button" class="chip on" data-v="fav"><svg class="ico s"><use href="#i-estrella"/></svg>Favorito</button>
+    </div>
+    <label class="campo"><span>Nombre</span><input id="guardarNombre" maxlength="60"></label>
+    <div class="dlg-pie"><button class="btn sec" value="cancelar">Cancelar</button><button class="btn" value="ok">Guardar</button></div>
+  </form>
+</dialog>
+
+<script src="https://unpkg.com/maplibre-gl@5.24.0/dist/maplibre-gl.js"></script>
+<script type="module" src="js/app.js"></script>
+</body>
+</html>

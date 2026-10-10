@@ -1,0 +1,49 @@
+rules_version = '2';
+// Reglas de Cloud Firestore de Por la sombra.
+// Cada usuario solo puede leer y escribir lo suyo; las estadísticas anónimas solo se pueden añadir
+// (nunca editar ni borrar) y las leen los usuarios con sesión para el observatorio.
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function conSesion() { return request.auth != null; }
+    function verificado() { return conSesion() && request.auth.token.email_verified == true; }
+    function esSuyo(uid) { return conSesion() && request.auth.uid == uid; }
+
+    match /usuarios/{uid} {
+      allow read, delete: if esSuyo(uid);
+      allow create, update: if esSuyo(uid)
+        && request.resource.data.keys().hasOnly(['nombre', 'email', 'creado', 'actualizado', 'privacidad', 'estadisticas', 'prefs'])
+        && (!('nombre' in request.resource.data) || (request.resource.data.nombre is string && request.resource.data.nombre.size() <= 80))
+        && (!('estadisticas' in request.resource.data) || request.resource.data.estadisticas is bool);
+
+      match /sitios/{id} {
+        allow read, delete: if esSuyo(uid);
+        allow create, update: if esSuyo(uid)
+          && request.resource.data.keys().hasOnly(['nombre', 'tipo', 'texto', 'lon', 'lat', 'creado'])
+          && request.resource.data.tipo in ['casa', 'trabajo', 'fav']
+          && request.resource.data.nombre is string && request.resource.data.nombre.size() <= 60
+          && request.resource.data.lon is number && request.resource.data.lat is number;
+      }
+      match /historial/{id} {
+        allow read, delete: if esSuyo(uid);
+        allow create, update: if esSuyo(uid)
+          && request.resource.data.keys().hasOnly(['texto', 'lon', 'lat', 'fecha'])
+          && request.resource.data.texto is string && request.resource.data.texto.size() <= 120
+          && request.resource.data.lon is number && request.resource.data.lat is number;
+      }
+    }
+
+    match /estadisticas/{id} {
+      allow create: if verificado()
+        && request.resource.data.keys().hasOnly(['v', 'fecha', 'mes', 'hora', 'dsem', 'dist', 'sombra', 'sol',
+                                                 'dist_corta', 'sombra_corta', 'sol_corta', 'min', 'tipo', 'ts'])
+        && request.resource.data.hora is int && request.resource.data.hora >= 0 && request.resource.data.hora <= 23
+        && request.resource.data.mes is int && request.resource.data.mes >= 1 && request.resource.data.mes <= 12
+        && request.resource.data.dist is number && request.resource.data.dist >= 0 && request.resource.data.dist <= 40000
+        && request.resource.data.sombra is number && request.resource.data.sombra >= 0 && request.resource.data.sombra <= 100
+        && request.resource.data.ts == request.time;
+      allow read: if verificado();
+      allow update, delete: if false;
+    }
+  }
+}

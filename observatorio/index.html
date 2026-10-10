@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Observatorio de la sombra · Marbella</title>
+<meta name="description" content="Qué parte de las aceras de Marbella está a la sombra de los edificios y del arbolado a cada hora y en cada mes, por zonas y por calles.">
+<link rel="icon" href="../img/icono.svg" type="image/svg+xml">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;650&display=swap" rel="stylesheet">
+
+<!-- Kit: no se toca por observatorio -->
+<link rel="stylesheet" href="assets/obs.css">
+
+<!-- Ajustes de marca de ESTE observatorio. Es el único sitio donde tocar color. -->
+<style>
+  :root { --brand: #2a78d6; --brand-ink: #1c5cab; --brand-soft: #eaf2fd; }
+</style>
+</head>
+<body>
+
+<div id="obs-app"></div>
+
+<!-- Librería de gráficas -->
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.5.1/dist/echarts.min.js"></script>
+<!-- Kit -->
+<script src="assets/obs-charts.js"></script>
+<script src="assets/obs-ui.js"></script>
+<!-- Datos (los escribe scripts/indicadores.mjs) -->
+<script src="data/data.js"></script>
+<!-- Declaración de ESTE observatorio -->
+<script src="app.js"></script>
+<!-- Uso de la app (estadísticas anónimas de Firestore, solo con sesión iniciada) -->
+<script type="module" src="uso.js"></script>
+
+</body>
+</html>
