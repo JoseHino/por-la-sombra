@@ -271,6 +271,25 @@ a { color: var(--brand-ink); }
 .popup-punto .botones { display: flex; gap: 6px; margin-top: 8px; }
 .popup-punto .btn { min-height: 34px; padding: 0 12px; font-size: 13px; }
 
+/* aviso para instalar la app (móvil) */
+.instalar {
+  position: absolute; left: 12px; right: 12px; bottom: calc(14px + var(--safe-b)); z-index: 6;
+  display: flex; align-items: center; gap: 12px; background: var(--surface); border-radius: var(--r-lg);
+  box-shadow: var(--shadow); padding: 10px 6px 10px 12px;
+}
+.instalar img { width: 40px; height: 40px; border-radius: 10px; flex: none; }
+.instalar .tx { flex: 1; min-width: 0; font-size: 13px; line-height: 1.3; }
+.instalar .tx b { display: block; font-size: 14px; }
+.instalar .tx span { color: var(--ink-mut); }
+.instalar .btn { min-height: 38px; padding: 0 14px; font-size: 14px; }
+.modo-ruta .instalar, .navegando .instalar { display: none; }
+.pasos-ios { margin: 4px 0 0; padding-left: 20px; color: var(--ink-2); }
+.pasos-ios li { margin: 8px 0; }
+.pasos-ios .ico { vertical-align: -3px; color: var(--brand-ink); }
+.qr { display: flex; gap: 14px; align-items: center; margin-top: 18px; padding: 12px; border: 1px solid var(--line); border-radius: var(--r); }
+.qr img { width: 112px; height: 112px; flex: none; background: #fff; border-radius: 6px; padding: 4px; }
+.qr p { margin: 0; font-size: 13px; color: var(--ink-2); }
+
 /* navegación */
 .nav-top {
   position: absolute; left: 12px; right: 12px; top: calc(12px + var(--safe-t)); z-index: 12;

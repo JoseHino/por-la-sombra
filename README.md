@@ -26,6 +26,11 @@ las aceras a la sombra a cada hora y en cada mes, por zonas y por calles.
    **Más sombra** (la que menos sol tiene sin pasar del rodeo máximo, 30 % por defecto), **Equilibrada** (la
    que más sol ahorra por metro de rodeo) y **Más corta**. De noche, solo la más corta.
 5. **Navegación**: sigue tu posición, dice la siguiente indicación y la acera, y recalcula si te sales.
+6. **Móvil**: es una PWA instalable (`manifest.webmanifest` + `sw.js`). En Android sale el botón «Instalar»; en
+   iPhone, las instrucciones de «Añadir a pantalla de inicio». El service worker guarda la app y los datos en el
+   móvil (los datos con `?v=` primero de la caché; lo demás, primero de la red). Todas las webs de
+   josehino.github.io comparten origen: las cachés llevan el prefijo `por-la-sombra-` y solo se borran las propias.
+   En escritorio, la bienvenida enseña un QR (`img/qr.svg`) para abrirla en el móvil.
 
 ## Archivos
 

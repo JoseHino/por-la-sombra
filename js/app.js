@@ -165,6 +165,7 @@ async function entrarEnApp() {
   }
   pintarInicio();
   prepararUbicacion();
+  setTimeout(pintarInstalar, 4000);
 }
 function pintarAvatar() {
   const u = estado.usuario, inicial = (u.nombre || u.email || '·').trim()[0]?.toUpperCase() || '·';
@@ -489,6 +490,7 @@ function fijar(campo, p) {
 }
 function modoRuta(si) {
   document.body.classList.toggle('modo-ruta', si);
+  pintarInstalar();
   $('filaBusca').hidden = si; $('filaRuta').hidden = !si;
   if (!si) {
     estado.origen = estado.destino = null; estado.rutas = []; estado.res = null;
@@ -651,6 +653,7 @@ function pintarInicio() {
     <p>Busca a dónde vas y te proponemos la ruta a pie con más sombra para la hora a la que sales, sin dar un rodeo absurdo. En el mapa ves la sombra de los edificios en cada momento.</p>
     ${sitios ? `<div class="atajos">${sitios}</div>` : ''}
     <div class="leyenda"><span class="ls"><i></i>Tramo a la sombra</span><span class="lo"><i></i>Tramo al sol</span></div>
+    <div class="qr"><img src="img/qr.svg" alt="Código QR de la web"><p><b>¿La quieres en el móvil?</b><br>Apunta la cámara del móvil a este código y ábrela. Después puedes añadirla a la pantalla de inicio para tenerla como una app.</p></div>
   </div>`, false);
   $('hojaIn').querySelectorAll('[data-s]').forEach(b => b.addEventListener('click', () => {
     const s = ordenarSitios()[+b.dataset.s];
@@ -791,7 +794,7 @@ $('dlgGuardar').addEventListener('close', async () => {
 });
 
 // ------------------------------------------------------------------ perfil
-$('btnPerfil').addEventListener('click', () => { pintarPerfil(); $('dlgPerfil').showModal(); });
+$('btnPerfil').addEventListener('click', () => { pintarPerfil(); pintarInstalar(); $('dlgPerfil').showModal(); });
 $('dlgPerfil').querySelector('[data-cerrar]').addEventListener('click', () => $('dlgPerfil').close());
 function pintarPerfil() {
   const l = ordenarSitios();
@@ -910,6 +913,39 @@ $('navTop').addEventListener('click', () => { estado.seguir = true; seguirNavega
 document.addEventListener('visibilitychange', async () => {
   if (!document.hidden && estado.navegando && !bloqueo) { try { bloqueo = await navigator.wakeLock?.request('screen'); } catch { } }
 });
+
+// ------------------------------------------------------------------ instalar como app (PWA)
+if ('serviceWorker' in navigator) addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(e => console.warn('Service worker:', e)));
+const esIOS = /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+const instalada = () => matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
+let promesaInstalar = null;
+addEventListener('beforeinstallprompt', e => { e.preventDefault(); promesaInstalar = e; pintarInstalar(); });
+addEventListener('appinstalled', () => { promesaInstalar = null; pintarInstalar(); aviso('Instalada: ya la tienes en la pantalla de inicio.'); });
+const puedeInstalar = () => !instalada() && (!!promesaInstalar || esIOS);
+function pintarInstalar() {
+  let visto = false;
+  try { visto = localStorage.getItem('pls_instalar_visto') === '1'; } catch { /* sin almacenamiento */ }
+  $('instalar').hidden = !(puedeInstalar() && !visto && estado.dentro && innerWidth < 900
+    && !document.body.classList.contains('modo-ruta') && !estado.navegando);
+  $('btnInstalarMenu').hidden = !puedeInstalar();
+}
+async function instalar() {
+  $('instalar').hidden = true;
+  try { localStorage.setItem('pls_instalar_visto', '1'); } catch { /* sin almacenamiento */ }
+  if (promesaInstalar) {
+    promesaInstalar.prompt();
+    await promesaInstalar.userChoice.catch(() => null);
+    promesaInstalar = null; pintarInstalar();
+  } else if (esIOS) $('dlgInstalarIos').showModal();
+  else aviso('Abre el menú del navegador y elige «Instalar app» o «Añadir a pantalla de inicio».', 6000);
+}
+$('btnInstalar').addEventListener('click', instalar);
+$('btnInstalarMenu').addEventListener('click', () => { $('dlgPerfil').close(); instalar(); });
+$('btnInstalarNo').addEventListener('click', () => {
+  $('instalar').hidden = true;
+  try { localStorage.setItem('pls_instalar_visto', '1'); } catch { /* sin almacenamiento */ }
+});
+$('dlgInstalarIos').querySelectorAll('[data-cerrar]').forEach(b => b.addEventListener('click', () => $('dlgInstalarIos').close()));
 
 // ------------------------------------------------------------------ arranque
 addEventListener('resize', () => { if (!document.body.classList.contains('modo-ruta')) pintarInicio(); });
